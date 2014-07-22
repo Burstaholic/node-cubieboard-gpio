@@ -31,8 +31,9 @@ Use node.js to control gpio on cubieboard
 
   setInterval(toggle, 1000);
 
-#Methdods
+#Methods
 
+```js
   /**
     initializes a pin to be used as a gpio
     args: none
@@ -64,6 +65,7 @@ Use node.js to control gpio on cubieboard
   args: none
   **/
   GPIO.getcfg()
+```
 
 
 
