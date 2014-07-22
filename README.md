@@ -7,6 +7,7 @@ Use node.js to control gpio on cubieboard
 	npm install node-cubieboard-gpio
 
 #Usage
+```js
   // Require library
   var GPIO = require('node-cubieboard-gpio');
 
@@ -30,6 +31,7 @@ Use node.js to control gpio on cubieboard
   }
 
   setInterval(toggle, 1000);
+```
 
 #Methods
 
