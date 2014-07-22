@@ -1,6 +1,6 @@
 {
   "name": "node-cubieboard-gpio",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "cubieboard driver for gpio pins",
   "main": "build/Release/gpio",
   "scripts": {
