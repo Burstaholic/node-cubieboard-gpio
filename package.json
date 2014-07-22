@@ -1,5 +1,21 @@
 {
-    "name": "modulename",
-    "version": "1.0.0",
-    "main": "./build/Release/modulename"
+  "name": "node-cubieboard-gpio",
+  "version": "0.0.0",
+  "description": "cubieboard driver for gpio pins",
+  "main": "build/Release/gpio",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nlintz/node-cubieboard-gpio.git"
+  },
+  "author": "Nathan Lintz",
+  "license": "ISC",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/nlintz/node-cubieboard-gpio/issues"
+  },
+  "homepage": "https://github.com/nlintz/node-cubieboard-gpio"
 }
