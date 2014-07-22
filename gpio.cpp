@@ -12,12 +12,12 @@ extern "C"{
         static_cast<v8::PropertyAttribute>(v8::ReadOnly|v8::DontDelete) \
 );
 
-#define PD0    SUNXI_GPD(0)
-#define PD1    SUNXI_GPD(4)
-#define PD2    SUNXI_GPD(3)
-#define PD3    SUNXI_GPD(6)
-#define PD4    SUNXI_GPD(5)
-#define PD5    SUNXI_GPD(8)
+#define PD1    SUNXI_GPD(1)
+#define PD2    SUNXI_GPD(2)
+#define PD3    SUNXI_GPD(3)
+#define PD4    SUNXI_GPD(4)
+#define PD5    SUNXI_GPD(5)
+#define PD6    SUNXI_GPD(6)
 
 using namespace v8;
 
@@ -196,12 +196,12 @@ void RegisterModule(Handle<Object> target) {
 
     WIRING_DEFINE_CONSTANT("HIGH", HIGH)
     WIRING_DEFINE_CONSTANT("LOW", LOW)
-    WIRING_DEFINE_CONSTANT("PD0", PD0)
     WIRING_DEFINE_CONSTANT("PD1", PD1)
     WIRING_DEFINE_CONSTANT("PD2", PD2)
     WIRING_DEFINE_CONSTANT("PD3", PD3)
     WIRING_DEFINE_CONSTANT("PD4", PD4)
     WIRING_DEFINE_CONSTANT("PD5", PD5)
+    WIRING_DEFINE_CONSTANT("PD6", PD6)
     WIRING_DEFINE_CONSTANT("IN", INPUT)
     WIRING_DEFINE_CONSTANT("OUT", OUTPUT)
     WIRING_DEFINE_CONSTANT("PER", PER)
