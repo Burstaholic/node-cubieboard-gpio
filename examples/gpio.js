@@ -1,4 +1,4 @@
-var GPIO = require('./build/Release/gpio');
+var GPIO = require('../build/Release/gpio');
 
 var LED = GPIO.PD0;
 var status = 0;
