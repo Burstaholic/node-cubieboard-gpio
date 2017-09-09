@@ -6,9 +6,9 @@ extern "C"{
 }
 
 // 定义一些工具宏
-#define WIRING_DEFINE_CONSTANT(NAME, VALUE) (target)->Set( \
-        v8::String::NewSymbol(NAME), \
-        v8::Integer::New(VALUE), \
+#define WIRING_DEFINE_CONSTANT(NAME, VALUE) (target)->ForceSet( \
+        v8::String::NewFromUtf8(Isolate::GetCurrent(), NAME), \
+        v8::Integer::New(Isolate::GetCurrent(), VALUE), \
         static_cast<v8::PropertyAttribute>(v8::ReadOnly|v8::DontDelete) \
 );
 
@@ -39,57 +39,57 @@ using namespace v8;
 
 
 // 初始化gpio的寄存器
-Handle<Value> GPIO_init(const Arguments& args) {
+void GPIO_init(const FunctionCallbackInfo<Value>& args) {
 
-    HandleScope scope;
+    Isolate* isolate = args.GetIsolate();
 
     int32_t result;
     result = sunxi_gpio_init();
 
     if(result == SETUP_DEVMEM_FAIL){
-	return ThrowException(
-            Exception::TypeError(String::New("SETUP_DEVMEM_FAIL Error"))
+	args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "SETUP_DEVMEM_FAIL Error")))
         );
     }
 
     if(result == SETUP_MALLOC_FAIL){
-        return ThrowException(
-            Exception::TypeError(String::New("SETUP_MALLOC_FAIL Error"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "SETUP_MALLOC_FAIL Error")))
         );
     }
 
     if(result == SETUP_MMAP_FAIL){
-        return ThrowException(
-            Exception::TypeError(String::New("SETUP_MMAP_FAIL Error"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "SETUP_MMAP_FAIL Error")))
         ); 
     }
 
-    return scope.Close(Integer::New(SETUP_OK));
+    args.GetReturnValue().Set(Integer::New(isolate, SETUP_OK));
 }
 
 
-Handle<Value> GPIO_cleanup(const Arguments& args) {
-    HandleScope scope;
+void GPIO_cleanup(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
 
     sunxi_gpio_cleanup();
 
-    return scope.Close(Undefined());
+    args.GetReturnValue().Set(Undefined(isolate));
 
 }
 
 // 获取引脚当状态 IN,OUT,PRE?
-Handle<Value> GPIO_getcfg(const Arguments& args) {
-    HandleScope scope;
-    
+void GPIO_getcfg(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+
     if (args.Length() < 1){
-        return ThrowException(
-            Exception::TypeError(String::New("Wrong number of arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")))
         );
     }
 
     if (!args[0]->IsNumber()){
-        return ThrowException(
-             Exception::TypeError(String::New("Wrong arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+             Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")))
         );
     }
 
@@ -98,22 +98,22 @@ Handle<Value> GPIO_getcfg(const Arguments& args) {
 
     result = sunxi_gpio_get_cfgpin(gpio);
 
-    return scope.Close(Integer::New(result));
+    args.GetReturnValue().Set(Integer::New(isolate, result));
 }
 
 // 读取的电平状态 HIGH?LOW?
-Handle<Value> GPIO_input(const Arguments& args) {
-    HandleScope scope;
+void GPIO_input(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
 
     if (args.Length() < 1){
-        return ThrowException(
-            Exception::TypeError(String::New("Wrong number of arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")))
         );
     }
 
     if (!args[0]->IsNumber()){
-        return ThrowException(
-             Exception::TypeError(String::New("Wrong arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+             Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")))
         );
     }
 
@@ -123,29 +123,30 @@ Handle<Value> GPIO_input(const Arguments& args) {
     result = sunxi_gpio_input(gpio);
 
     if(result == -1){
-        return ThrowException(
-             Exception::TypeError(String::New("Reading pin failed"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+             Exception::TypeError(String::NewFromUtf8(isolate, "Reading pin failed")))
         );
     }
 
-    return scope.Close(Integer::New(result));
+    args.GetReturnValue().Set(Integer::New(isolate, result));
 
 }
 
 
 // 输出电平
-Handle<Value> GPIO_output(const Arguments& args) {
-    HandleScope scope;
+void GPIO_output(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+    EscapableHandleScope scope(isolate);
 
     if (args.Length() < 2){
-        return ThrowException(
-            Exception::TypeError(String::New("Wrong number of arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")))
         );	
     }
 
     if (!args[0]->IsNumber() || !args[1]->IsNumber()){
-        return ThrowException(           
-	     Exception::TypeError(String::New("Wrong arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+	     Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")))
         );
     }
 
@@ -153,36 +154,37 @@ Handle<Value> GPIO_output(const Arguments& args) {
     int32_t value = args[1]->ToInteger()->Value();
 
     if( value != 0 && value != 1) {
-        return ThrowException(                        
-	     Exception::TypeError(String::New("Invalid output state"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+	     Exception::TypeError(String::NewFromUtf8(isolate, "Invalid output state")))
         );
     }
 
     if(sunxi_gpio_get_cfgpin(gpio) != SUNXI_GPIO_OUTPUT) {
-	return ThrowException( 
-             Exception::TypeError(String::New("Invalid output state"))
+	args.GetReturnValue().Set( isolate->ThrowException(
+             Exception::TypeError(String::NewFromUtf8(isolate, "Invalid output state")))
         );
     }
 
     sunxi_gpio_output(gpio, value);
 
-    return scope.Close(Undefined());
+    args.GetReturnValue().Set(scope.Escape(Undefined(isolate)));
 
 }
 
 // 设置GPIO功能 IN?OUT?PRE?
-Handle<Value> GPIO_setcfg(const Arguments& args) {
-    HandleScope scope;
+void GPIO_setcfg(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+    EscapableHandleScope scope(isolate);
 
     if (args.Length() < 2){
-        return ThrowException(
-            Exception::TypeError(String::New("Wrong number of arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")))
         );
     }
 
     if (!args[0]->IsNumber() || !args[1]->IsNumber()){
-        return ThrowException(
-             Exception::TypeError(String::New("Wrong arguments"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+             Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")))
         );
     }
 
@@ -190,13 +192,13 @@ Handle<Value> GPIO_setcfg(const Arguments& args) {
     int32_t direction = args[1]->ToInteger()->Value();
 
     if(direction != 0 && direction != 1 && direction != 2) {
-        return ThrowException(
-             Exception::TypeError(String::New("Invalid direction"))
+        args.GetReturnValue().Set( isolate->ThrowException(
+             Exception::TypeError(String::NewFromUtf8(isolate, "Invalid direction")))
         );
     }
 
     sunxi_gpio_set_cfgpin(gpio, direction);
-    return scope.Close(Undefined());
+    args.GetReturnValue().Set( scope.Escape(Undefined(isolate)));
 
 }
 
